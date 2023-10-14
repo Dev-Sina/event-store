@@ -9,8 +9,6 @@ Event Store DB event sourcing sample
 ```bash
   docker pull eventstore/eventstore
 ```
-[From Event Store website|https://www.eventstore.com/]
-[From Docker Hub|https://hub.docker.com/r/eventstore/eventstore]
 
 2- Second, create and run its docker containter in 'Insecure' mode:
 ```bash
@@ -20,3 +18,10 @@ Event Store DB event sourcing sample
 3- Set 'Api' project as 'Startup Project'
 
 4- Run the 'Api'
+
+### Some references
+
+
+- [Event Store website](https://www.eventstore.com/)
+
+- [Docker Hub](https://hub.docker.com/r/eventstore/eventstore)
