@@ -64,12 +64,10 @@ public static class Program
                 services.AddTransient<IEventHandler<AccountCreatedEvent>, AccountCreatedEventHandler>();
                 services.AddTransient<IEventHandler<FundsDepositedEvent>, FundsDepositedEventHandler>();
                 services.AddTransient<IEventHandler<FundsWithdrawedEvent>, FundsWithdrawedEventHandler>();
-                services.AddSingleton<IEventStoreRepository>(provider => new EventStoreRepository(esdbConnectionString));
+                services.AddSingleton<IEventStoreRepository>(serviceProvider => new EventStoreRepository(esdbConnectionString));
                 services.AddSingleton<IEventHandlerFactory, EventHandlerFactory>();
             });
 
         return builder;
     }
 }
-
-
