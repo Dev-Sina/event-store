@@ -2,7 +2,7 @@
 using ESDB.Core.Events;
 using ESDB.Core.Models;
 
-namespace ESDB.Services.Subscription.EventHandlers;
+namespace ESDB.Services.EventsHandlers.EventHandlers;
 
 public class FundsDepositedEventHandler : IEventHandler<FundsDepositedEvent>
 {

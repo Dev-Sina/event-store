@@ -1,9 +1,9 @@
 ﻿using ESDB.Core.Abstraction;
 using ESDB.Core.Events;
 using ESDB.Core.Models;
-using ESDB.Services.Publisher;
-using ESDB.Services.Subscription;
-using ESDB.Services.Subscription.EventHandlers;
+using ESDB.Services.Repository;
+using ESDB.Services.EventsHandlers;
+using ESDB.Services.EventsHandlers.EventHandlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -13,36 +13,37 @@ public static class Program
 {
     public static async Task Main(params string[] args)
     {
-        using var host = CreateHostBuilder(args).Build();
+        string esdbConnectionString = "esdb://127.0.0.1:2113?tls=false&keepAliveTimeout=10000&keepAliveInterval=10000";
+        using var host = CreateHostBuilder(args, esdbConnectionString).Build();
 
-        var eventPublisher = host.Services.GetRequiredService<IEventPublisher>();
-        var eventSubscriber = host.Services.GetRequiredService<IEventSubscriber>();
+        var repository = host.Services.GetRequiredService<IEventStoreRepository>();
+        var eventHandlerFactory = host.Services.GetRequiredService<IEventHandlerFactory>();
 
         string streamName = $"sina-{DateTime.UtcNow}";
         Guid aggregateId = Guid.NewGuid();
 
-        await eventPublisher.PublishEventAsync(streamName, new AccountCreatedEvent(aggregateId, "Sina Bahmanpour"));
-        await eventSubscriber.SubscribeEventAsync(streamName);
+        await repository.AddEventToStream(streamName, new AccountCreatedEvent(aggregateId, "Sina Bahmanpour"));
+        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
         Console.WriteLine();
 
-        await eventPublisher.PublishEventAsync(streamName, new FundsDepositedEvent(aggregateId, 150));
-        await eventSubscriber.SubscribeEventAsync(streamName);
+        await repository.AddEventToStream(streamName, new FundsDepositedEvent(aggregateId, 150));
+        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
         Console.WriteLine();
 
-        await eventPublisher.PublishEventAsync(streamName, new FundsDepositedEvent(aggregateId, 100));
-        await eventSubscriber.SubscribeEventAsync(streamName);
+        await repository.AddEventToStream(streamName, new FundsDepositedEvent(aggregateId, 100));
+        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
         Console.WriteLine();
 
-        await eventPublisher.PublishEventAsync(streamName, new FundsWithdrawedEvent(aggregateId, 60));
-        await eventSubscriber.SubscribeEventAsync(streamName);
+        await repository.AddEventToStream(streamName, new FundsWithdrawedEvent(aggregateId, 60));
+        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
         Console.WriteLine();
 
-        await eventPublisher.PublishEventAsync(streamName, new FundsWithdrawedEvent(aggregateId, 94));
-        await eventSubscriber.SubscribeEventAsync(streamName);
+        await repository.AddEventToStream(streamName, new FundsWithdrawedEvent(aggregateId, 94));
+        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
         Console.WriteLine();
 
-        await eventPublisher.PublishEventAsync(streamName, new FundsDepositedEvent(aggregateId, 4));
-        await eventSubscriber.SubscribeEventAsync(streamName);
+        await repository.AddEventToStream(streamName, new FundsDepositedEvent(aggregateId, 4));
+        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
         Console.WriteLine();
 
         Console.WriteLine("");
@@ -50,10 +51,11 @@ public static class Program
         Console.ReadLine();
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args)
+    public static IHostBuilder CreateHostBuilder(string[] args,
+        string esdbConnectionString)
     {
         var builder = Host.CreateDefaultBuilder();
-        
+
         builder
             .ConfigureServices(services =>
             {
@@ -62,8 +64,8 @@ public static class Program
                 services.AddTransient<IEventHandler<AccountCreatedEvent>, AccountCreatedEventHandler>();
                 services.AddTransient<IEventHandler<FundsDepositedEvent>, FundsDepositedEventHandler>();
                 services.AddTransient<IEventHandler<FundsWithdrawedEvent>, FundsWithdrawedEventHandler>();
-                services.AddSingleton<IEventPublisher, EventPublisher>();
-                services.AddSingleton<IEventSubscriber, EventSubscriber>();
+                services.AddSingleton<IEventStoreRepository>(provider => new EventStoreRepository(esdbConnectionString));
+                services.AddSingleton<IEventHandlerFactory, EventHandlerFactory>();
             });
 
         return builder;

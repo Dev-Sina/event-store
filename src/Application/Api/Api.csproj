@@ -18,8 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Events\Events.csproj" />
     <ProjectReference Include="..\..\Core\Models\Models.csproj" />
-    <ProjectReference Include="..\..\Services\Publisher\Publisher.csproj" />
-    <ProjectReference Include="..\..\Services\Subscription\Subscription.csproj" />
+    <ProjectReference Include="..\..\Services\EventsHandlers\EventsHandlers.csproj" />
+    <ProjectReference Include="..\..\Services\Repositories\Repositories.csproj" />
   </ItemGroup>
 
 </Project>

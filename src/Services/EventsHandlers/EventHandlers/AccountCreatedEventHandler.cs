@@ -2,25 +2,23 @@
 using ESDB.Core.Events;
 using ESDB.Core.Models;
 
-namespace ESDB.Services.Subscription.EventHandlers;
+namespace ESDB.Services.EventsHandlers.EventHandlers;
 
-public class FundsWithdrawedEventHandler : IEventHandler<FundsWithdrawedEvent>
+public class AccountCreatedEventHandler : IEventHandler<AccountCreatedEvent>
 {
     private readonly BankAccountModel _bankAccountModel;
 
-    public FundsWithdrawedEventHandler(BankAccountModel bankAccountModel)
+    public AccountCreatedEventHandler(BankAccountModel bankAccountModel)
     {
         _bankAccountModel = bankAccountModel;
     }
 
-    public async Task HandleEventAsync(FundsWithdrawedEvent @event,
+    public async Task HandleEventAsync(AccountCreatedEvent @event,
         CancellationToken cancellationToken = default)
     {
         _bankAccountModel.Apply(@event);
 
-        Console.Write("-- Funds Withdrawed | Balance: ");
-        Console.Write(@event.Amount);
-        Console.Write(" | Balance: ");
+        Console.Write("-- Account Created | Balance: ");
         Console.WriteLine(_bankAccountModel.CurrentBalance);
 
         await Task.CompletedTask;
