@@ -11,7 +11,6 @@ public class EventStoreRepository : IEventStoreRepository
 
     public EventStoreRepository(string connectionString)
     {
-        //string connectionString = "esdb://127.0.0.1:2113?tls=false&keepAliveTimeout=10000&keepAliveInterval=10000";
         var settings = EventStoreClientSettings.Create($"{connectionString}");
         _client = new EventStoreClient(settings);
     }
