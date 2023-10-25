@@ -22,31 +22,39 @@ public static class Program
         string streamName = $"sina-{DateTime.UtcNow}";
         Guid aggregateId = Guid.NewGuid();
 
+        Random rnd = new();
+
+        int numberOfEvents = rnd.Next(3, 60);
+        Console.WriteLine("");
+        Console.Write("Number of all events : ");
+        Console.Write(numberOfEvents);
+        Console.WriteLine();
+        Console.WriteLine();
+
         await repository.AddEventToStream(streamName, new AccountCreatedEvent(aggregateId, "Sina Bahmanpour"));
         await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
         Console.WriteLine();
 
-        await repository.AddEventToStream(streamName, new FundsDepositedEvent(aggregateId, 150));
-        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
-        Console.WriteLine();
+        for (int i = 0; i < numberOfEvents; i++)
+        {
+            bool isDeposite = new List<bool>(2) { false, true } [rnd.Next(2)];
+            decimal amount = rnd.Next(1, 20) * 10;
+            IEvent? @event = null;
+            if (isDeposite)
+            {
+                @event = new FundsDepositedEvent(aggregateId, amount);
+            }
+            else
+            {
+                @event = new FundsWithdrawedEvent(aggregateId, amount);
+            }
 
-        await repository.AddEventToStream(streamName, new FundsDepositedEvent(aggregateId, 100));
-        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
-        Console.WriteLine();
+            await repository.AddEventToStream(streamName, @event);
+            await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
+            Console.WriteLine();
+        }
 
-        await repository.AddEventToStream(streamName, new FundsWithdrawedEvent(aggregateId, 60));
-        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
         Console.WriteLine();
-
-        await repository.AddEventToStream(streamName, new FundsWithdrawedEvent(aggregateId, 94));
-        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
-        Console.WriteLine();
-
-        await repository.AddEventToStream(streamName, new FundsDepositedEvent(aggregateId, 4));
-        await eventHandlerFactory.HandleAllStreamEventRecordsAsync(streamName);
-        Console.WriteLine();
-
-        Console.WriteLine("");
         Console.Write("Please press a key to exit...");
         Console.ReadLine();
     }
