@@ -2,6 +2,7 @@
 
 public interface IEventPublisher : IDisposable, IAsyncDisposable
 {
-    Task<string> PublishEventAsync(object @event,
+    Task<string> PublishEventAsync(string streamName,
+        object @event,
         CancellationToken cancellationToken = default);
 }

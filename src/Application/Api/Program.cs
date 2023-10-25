@@ -18,25 +18,32 @@ public static class Program
         var eventPublisher = host.Services.GetRequiredService<IEventPublisher>();
         var eventSubscriber = host.Services.GetRequiredService<IEventSubscriber>();
 
+        string streamName = $"sina-{DateTime.UtcNow}";
         Guid aggregateId = Guid.NewGuid();
 
-        string streamName1 = await eventPublisher.PublishEventAsync(new AccountCreatedEvent(aggregateId, "Sina Bahmanpour"));
-        await eventSubscriber.SubscribeEventAsync(streamName1);
+        await eventPublisher.PublishEventAsync(streamName, new AccountCreatedEvent(aggregateId, "Sina Bahmanpour"));
+        await eventSubscriber.SubscribeEventAsync(streamName);
+        Console.WriteLine();
 
-        string streamName2 = await eventPublisher.PublishEventAsync(new FundsDepositedEvent(aggregateId, 150));
-        await eventSubscriber.SubscribeEventAsync(streamName2);
+        await eventPublisher.PublishEventAsync(streamName, new FundsDepositedEvent(aggregateId, 150));
+        await eventSubscriber.SubscribeEventAsync(streamName);
+        Console.WriteLine();
 
-        string streamName3 = await eventPublisher.PublishEventAsync(new FundsDepositedEvent(aggregateId, 100));
-        await eventSubscriber.SubscribeEventAsync(streamName3);
+        await eventPublisher.PublishEventAsync(streamName, new FundsDepositedEvent(aggregateId, 100));
+        await eventSubscriber.SubscribeEventAsync(streamName);
+        Console.WriteLine();
 
-        string streamName4 = await eventPublisher.PublishEventAsync(new FundsWithdrawedEvent(aggregateId, 60));
-        await eventSubscriber.SubscribeEventAsync(streamName4);
+        await eventPublisher.PublishEventAsync(streamName, new FundsWithdrawedEvent(aggregateId, 60));
+        await eventSubscriber.SubscribeEventAsync(streamName);
+        Console.WriteLine();
 
-        string streamName5 = await eventPublisher.PublishEventAsync(new FundsWithdrawedEvent(aggregateId, 94));
-        await eventSubscriber.SubscribeEventAsync(streamName5);
+        await eventPublisher.PublishEventAsync(streamName, new FundsWithdrawedEvent(aggregateId, 94));
+        await eventSubscriber.SubscribeEventAsync(streamName);
+        Console.WriteLine();
 
-        string streamName6 = await eventPublisher.PublishEventAsync(new FundsDepositedEvent(aggregateId, 4));
-        await eventSubscriber.SubscribeEventAsync(streamName6);
+        await eventPublisher.PublishEventAsync(streamName, new FundsDepositedEvent(aggregateId, 4));
+        await eventSubscriber.SubscribeEventAsync(streamName);
+        Console.WriteLine();
 
         Console.WriteLine("");
         Console.Write("Please press a key to exit...");
@@ -50,11 +57,11 @@ public static class Program
         builder
             .ConfigureServices(services =>
             {
-                services.AddSingleton<BankAccountModel>();
+                services.AddScoped<BankAccountModel>();
                 services.AddTransient<TransactionModel>();
-                services.AddScoped<IEventHandler<AccountCreatedEvent>, AccountCreatedEventHandler>();
-                services.AddScoped<IEventHandler<FundsDepositedEvent>, FundsDepositedEventHandler>();
-                services.AddScoped<IEventHandler<FundsWithdrawedEvent>, FundsWithdrawedEventHandler>();
+                services.AddTransient<IEventHandler<AccountCreatedEvent>, AccountCreatedEventHandler>();
+                services.AddTransient<IEventHandler<FundsDepositedEvent>, FundsDepositedEventHandler>();
+                services.AddTransient<IEventHandler<FundsWithdrawedEvent>, FundsWithdrawedEventHandler>();
                 services.AddSingleton<IEventPublisher, EventPublisher>();
                 services.AddSingleton<IEventSubscriber, EventSubscriber>();
             });

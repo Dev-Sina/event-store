@@ -1,8 +1,8 @@
 ﻿using System.Text;
+using System.Text.Json;
 using ESDB.Core.Abstraction;
 using ESDB.Core.Events;
 using EventStore.Client;
-using Newtonsoft.Json;
 
 namespace ESDB.Services.Subscription;
 
@@ -42,21 +42,21 @@ public class EventSubscriber : IEventSubscriber
                 switch (x.Event.EventType)
                 {
                     case nameof(AccountCreatedEvent):
-                        eventObject = JsonConvert.DeserializeObject<AccountCreatedEvent>(eventSerializedData);
+                        eventObject = JsonSerializer.Deserialize<AccountCreatedEvent>(eventSerializedData);
                         if (eventObject is AccountCreatedEvent accountCreatedEvent)
                         {
                             await _accountCreatedEventHandler.HandleEventAsync(accountCreatedEvent);
                         }
                         break;
                     case nameof(FundsDepositedEvent):
-                        eventObject = JsonConvert.DeserializeObject<FundsDepositedEvent>(eventSerializedData);
+                        eventObject = JsonSerializer.Deserialize<FundsDepositedEvent>(eventSerializedData);
                         if (eventObject is FundsDepositedEvent fundsDepositedEvent)
                         {
                             await _fundsDepositedEventHandler.HandleEventAsync(fundsDepositedEvent);
                         }
                         break;
                     case nameof(FundsWithdrawedEvent):
-                        eventObject = JsonConvert.DeserializeObject<FundsWithdrawedEvent>(eventSerializedData);
+                        eventObject = JsonSerializer.Deserialize<FundsWithdrawedEvent>(eventSerializedData);
                         if (eventObject is FundsWithdrawedEvent fundsWithdrawedEvent)
                         {
                             await _fundsWithdrawedEventHandler.HandleEventAsync(fundsWithdrawedEvent);

@@ -18,7 +18,9 @@ public class FundsDepositedEventHandler : IEventHandler<FundsDepositedEvent>
     {
         _bankAccountModel.Apply(@event);
 
-        Console.Write("-- Funds Deposited | Balance: ");
+        Console.Write("-- Funds Deposited | Amount: ");
+        Console.Write(@event.Amount);
+        Console.Write(" | Balance: ");
         Console.WriteLine(_bankAccountModel.CurrentBalance);
 
         await Task.CompletedTask;

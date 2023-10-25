@@ -6,6 +6,7 @@ public class TransactionModel
     {
     }
 
-    public Guid Guid { get; set; }
+    public Guid EventGuid { get; set; }
+    public Guid AggregateGuid { get; set; }
     public decimal Amount { get; set; }
 }

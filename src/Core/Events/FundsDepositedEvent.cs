@@ -1,13 +1,30 @@
-﻿namespace ESDB.Core.Events;
+﻿using System.Text.Json.Serialization;
+
+namespace ESDB.Core.Events;
 
 public class FundsDepositedEvent : IEvent
 {
-    public FundsDepositedEvent(Guid guid, decimal amount)
+    private FundsDepositedEvent() { }
+
+    [JsonConstructor]
+    public FundsDepositedEvent(Guid guid,
+        Guid aggregateGuid,
+        decimal amount)
     {
         Guid = guid;
+        AggregateGuid = aggregateGuid;
         Amount = amount;
     }
 
-    public Guid Guid { get; private set; }
-    public decimal Amount { get; private set; }
+    public FundsDepositedEvent(Guid aggregateGuid,
+        decimal amount)
+    {
+        Guid = Guid.NewGuid();
+        AggregateGuid = aggregateGuid;
+        Amount = amount;
+    }
+
+    public Guid Guid { get; }
+    public Guid AggregateGuid { get; }
+    public decimal Amount { get; }
 }

@@ -3,4 +3,5 @@
 public interface IEvent
 {
     Guid Guid { get; }
+    Guid AggregateGuid { get; }
 }

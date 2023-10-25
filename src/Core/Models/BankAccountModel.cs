@@ -8,39 +8,60 @@ public class BankAccountModel
     {
     }
 
-    public Guid Guid { get; set; }
+    public Guid AggregateGuid { get; set; }
     public string Name { get; set; } = null!;
     public decimal CurrentBalance { get; set; }
     public List<TransactionModel> Transactions { get; set; } = new List<TransactionModel>();
 
+    public void CalculateCurrentBalance()
+    {
+        CurrentBalance = Transactions
+            .DistinctBy(x => x.EventGuid)
+            .Select(x => x.Amount)
+            .Sum();
+    }
+
     public void Apply(AccountCreatedEvent @event)
     {
-        Guid = @event.Guid;
+        AggregateGuid = @event.AggregateGuid;
         Name = @event.Name;
-        CurrentBalance = CurrentBalance;
+
+        CalculateCurrentBalance();
     }
 
     public void Apply(FundsDepositedEvent @event)
     {
+        if (Transactions.Any(x => x.EventGuid == @event.Guid))
+        {
+            return;
+        }
+
         var newTransaction = new TransactionModel
         {
-            Guid = @event.Guid,
+            EventGuid = @event.Guid,
+            AggregateGuid = @event.AggregateGuid,
             Amount = @event.Amount
         };
 
         Transactions.Add(newTransaction);
-        CurrentBalance = CurrentBalance + @event.Amount;
+        CalculateCurrentBalance();
     }
 
     public void Apply(FundsWithdrawedEvent @event)
     {
+        if (Transactions.Any(x => x.EventGuid == @event.Guid))
+        {
+            return;
+        }
+
         var newTransaction = new TransactionModel
         {
-            Guid = @event.Guid,
-            Amount = @event.Amount
+            EventGuid = @event.Guid,
+            AggregateGuid = @event.AggregateGuid,
+            Amount = @event.Amount * -1
         };
 
         Transactions.Add(newTransaction);
-        CurrentBalance = CurrentBalance - @event.Amount;
+        CalculateCurrentBalance();
     }
 }

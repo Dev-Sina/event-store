@@ -19,6 +19,8 @@ public class FundsWithdrawedEventHandler : IEventHandler<FundsWithdrawedEvent>
         _bankAccountModel.Apply(@event);
 
         Console.Write("-- Funds Withdrawed | Balance: ");
+        Console.Write(@event.Amount);
+        Console.Write(" | Balance: ");
         Console.WriteLine(_bankAccountModel.CurrentBalance);
 
         await Task.CompletedTask;

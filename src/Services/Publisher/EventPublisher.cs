@@ -17,7 +17,8 @@ public class EventPublisher : IEventPublisher
         _client = new EventStoreClient(settings);
     }
 
-    public async Task<string> PublishEventAsync(object @event,
+    public async Task<string> PublishEventAsync(string streamName,
+        object @event,
         CancellationToken cancellationToken = default)
     {
         // Specify variables values
@@ -37,9 +38,6 @@ public class EventPublisher : IEventPublisher
         var eventStoreDataType = new EventData(Uuid.NewUuid(),
             eventType,
             eventDataBytes);
-
-        // Create stram name
-        string streamName = $"sina-stream-{Guid.NewGuid()}";
 
         // Publish the event to the specified stream.
         await _client.AppendToStreamAsync(streamName,
