@@ -115,6 +115,7 @@ public class EventStoreRepository : IEventStoreRepository
                 y is not null &&
                 y.EventType.Equals(typeof(TEvent).Name, StringComparison.OrdinalIgnoreCase))
             .OrderBy(y => y.Created)
+            .ThenBy(y => y.EventNumber)
             .Select(y =>
             {
                 var eventByteArrayData = y.Data;
@@ -150,6 +151,7 @@ public class EventStoreRepository : IEventStoreRepository
         var events = resolvedEvents
             .Select(x => x.Event)
             .OrderBy(x => x.Created)
+            .ThenBy(x => x.EventNumber)
             .Where(x => x is not null) ?? Enumerable.Empty<EventRecord>();
 
         return events;
