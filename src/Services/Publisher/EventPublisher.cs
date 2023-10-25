@@ -17,7 +17,7 @@ public class EventPublisher : IEventPublisher
         _client = new EventStoreClient(settings);
     }
 
-    public async Task<string> PublishEventAsync(string streamName,
+    public async Task PublishEventAsync(string streamName,
         object @event,
         CancellationToken cancellationToken = default)
     {
@@ -44,9 +44,6 @@ public class EventPublisher : IEventPublisher
             StreamState.Any,
             new List<EventData>(1) { eventStoreDataType },
             null);
-
-        // Return the result
-        return streamName;
     }
 
     public void Dispose()
