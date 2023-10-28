@@ -1,6 +1,6 @@
 # event-store
 
-Event Store DB event sourcing sample
+Event Store DB event sourcing sample with EventStore repository and etc.
 
 
 ## Installation
